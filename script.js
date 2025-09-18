@@ -3,7 +3,7 @@ const chatBody = document.querySelector(".chat-body");
 const sendMessageButton = document.querySelector("#send-message");
 
 //API Setup
-const API_KEY = `AIzaSyBz83pJNHx11nIitwUvKX1D_Zz7AJ47824`;
+const API_KEY = "AIzaSyBz83pJNHx11nIitwUvKX1D_Zz7AJ47824";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 const userData = {
@@ -19,7 +19,8 @@ const createMessageElement = (content, ...classes) => {
 }
 
 //Generate bot response using API
-const generateBotResponse = async () => {
+const generateBotResponse = async (incomingMessageDiv) => {
+    const messageElement = incomingMessageDiv.querySelector(".message-text");
 
     //API request options
     const requestOptions = {
@@ -38,9 +39,16 @@ const generateBotResponse = async () => {
         const data = await response.json();
         if(!response.ok) throw new Error(data.error.message);
 
-        console.log(data);
+        //Extract and display bot response text
+        const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+        messageElement.innerText = apiResponseText;
     } catch (error) {
         console.log(error);
+        messageElement.innerText = error.message;
+        messageElement.style.color = "#ff0000";
+    } finally {
+        incomingMessageDiv.classList.remove("thinking");
+        chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
     }
 }
 
@@ -56,6 +64,7 @@ const handleOutgoingMessage = (e) => {
     const outgoingMessageDiv = createMessageElement(messageContent, "user-message");
     outgoingMessageDiv.querySelector(".message-text").textContent = userData.message;
     chatBody.appendChild(outgoingMessageDiv);
+    chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
 
     //simulate bot response with thinking indicator after delay
     setTimeout(() => {
@@ -73,7 +82,8 @@ const handleOutgoingMessage = (e) => {
 
         const incomingMessageDiv = createMessageElement(messageContent, "bot-message","thinking");
         chatBody.appendChild(incomingMessageDiv);
-        generateBotResponse();
+        chatBody.scrollTo({ top: chatBody.scrollHeight, behavior: "smooth" });
+        generateBotResponse(incomingMessageDiv);
     }, 600);
 }
 
