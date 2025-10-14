@@ -4,6 +4,7 @@ const sendMessageButton = document.querySelector("#send-message");
 const fileInput = document.querySelector("#file-input");
 const fileUploadWrapper = document.querySelector(".file-upload-wrapper");
 const fileCancelButton = document.querySelector("#file-cancel");
+const chatbotToggler = document.querySelector("#button-toggler");
 
 //API Setup
 const API_KEY = "AIzaSyBz83pJNHx11nIitwUvKX1D_Zz7AJ47824";
@@ -156,7 +157,7 @@ const picker = new EmojiMart.Picker({
 });
 
 document.querySelector(".chat-form").appendChild(picker);
-
 sendMessageButton.addEventListener("click", (e) => handleOutgoingMessage(e))
-
 document.querySelector("#file-upload").addEventListener("click", () => fileInput.click());
+
+chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
